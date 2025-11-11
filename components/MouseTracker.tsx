@@ -22,17 +22,22 @@ export default function MouseTracker() {
     updateSize();
     window.addEventListener("resize", updateSize);
 
-    // Mouse move handler
+    // Mouse move handler with throttling for less frequent ripples
+    let lastRippleTime = 0;
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
       
-      // Add new ripple
-      ripples.current.push({
-        x: e.clientX,
-        y: e.clientY,
-        radius: 0,
-        alpha: 1,
-      });
+      // Add new ripple less frequently (every 150ms instead of every frame)
+      const now = Date.now();
+      if (now - lastRippleTime > 150) {
+        ripples.current.push({
+          x: e.clientX,
+          y: e.clientY,
+          radius: 0,
+          alpha: 0.6, // More subtle alpha
+        });
+        lastRippleTime = now;
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -42,19 +47,19 @@ export default function MouseTracker() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw and update ripples (isochrones)
+      // Draw and update ripples (isochrones) - smaller and more subtle
       ripples.current = ripples.current.filter((ripple) => {
-        ripple.radius += 3;
-        ripple.alpha -= 0.01;
+        ripple.radius += 2; // Slower expansion
+        ripple.alpha -= 0.015; // Fade faster
 
         if (ripple.alpha > 0) {
-          // Draw multiple concentric circles for isochrone effect
-          for (let i = 0; i < 3; i++) {
-            const offset = i * 15;
+          // Draw fewer, smaller concentric circles for isochrone effect
+          for (let i = 0; i < 2; i++) {
+            const offset = i * 10; // Smaller spacing
             ctx.beginPath();
             ctx.arc(ripple.x, ripple.y, ripple.radius + offset, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(59, 130, 246, ${ripple.alpha * (1 - i * 0.3)})`;
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = `rgba(59, 130, 246, ${ripple.alpha * (1 - i * 0.4) * 0.5})`; // More subtle
+            ctx.lineWidth = 1; // Thinner lines
             ctx.stroke();
           }
           return true;
@@ -62,17 +67,17 @@ export default function MouseTracker() {
         return false;
       });
 
-      // Draw gradient around cursor
+      // Draw gradient around cursor - more subtle
       const gradient = ctx.createRadialGradient(
         mouseRef.current.x,
         mouseRef.current.y,
         0,
         mouseRef.current.x,
         mouseRef.current.y,
-        150
+        120
       );
-      gradient.addColorStop(0, "rgba(6, 182, 212, 0.15)");
-      gradient.addColorStop(0.5, "rgba(59, 130, 246, 0.08)");
+      gradient.addColorStop(0, "rgba(6, 182, 212, 0.08)"); // Reduced opacity
+      gradient.addColorStop(0.5, "rgba(59, 130, 246, 0.04)"); // Reduced opacity
       gradient.addColorStop(1, "rgba(59, 130, 246, 0)");
 
       ctx.fillStyle = gradient;
