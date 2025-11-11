@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MouseTracker from "@/components/MouseTracker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.className} bg-gray-950 text-gray-100`}>
+        <MouseTracker />
         <Navigation />
         <main className="min-h-screen">{children}</main>
         <Footer />

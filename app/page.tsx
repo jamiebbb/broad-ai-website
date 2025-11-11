@@ -92,10 +92,10 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          {/* Scroll indicator - repositioned below buttons */}
+          <div className="mt-16 animate-bounce">
             <svg
-              className="w-6 h-6 text-gray-400"
+              className="w-6 h-6 text-gray-400 mx-auto"
               fill="none"
               strokeLinecap="round"
               strokeLinejoin="round"
